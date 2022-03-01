@@ -51,7 +51,7 @@ pipeline {
 
             echo 'deploying docker image to EC2. .. . ..'
 
-            def dockerCmd = "docker run -d -p 8080 ${IMAGE_NAME}"
+            def dockerCmd = "docker run -d -p 5000 ${IMAGE_NAME}"
             def ec2instance = "ec2-user@${EC2_LINUX_IP}"
 
             sshagent(['ec2-server-key']) {
