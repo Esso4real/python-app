@@ -22,8 +22,8 @@ resource "aws_security_group" "sg" {
 
   ingress {
     description = "TLS from VPC"
-    from_port   = 8081
-    to_port     = 8081
+    from_port   = 5000
+    to_port     = 5000
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
 
