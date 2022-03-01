@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = 'esso4real/python-app:v1'
+        IMAGE_NAME = 'esso4real/python-app:v2'
     }
     stages {  
         stage('Build docker image') {
@@ -51,7 +51,7 @@ pipeline {
 
             echo 'deploying docker image to EC2. .. . ..'
 
-            def dockerCmd = "docker run -d -p 5000 ${IMAGE_NAME}"
+            def dockerCmd = "docker run -d -p 5000:5000 ${IMAGE_NAME}"
             def ec2instance = "ec2-user@${EC2_LINUX_IP}"
 
             sshagent(['ec2-server-key']) {
