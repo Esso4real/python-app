@@ -1,30 +1,21 @@
 pipeline {
     agent any
 
-    tools {
-        // Install the Maven 
-        maven "maven3.8"
+    environment {
+        IMAGE_NAME = 'esso4real/python-app:v1'
     }
-
-    stages {
-        stage('Build') {
-            steps {
-                // Get some code from a GitHub repository
-                //git 'https://gitlab.com/ernest.awangya/java-project.git'
-
-                // Run Maven 
-                sh "mvn -Dmaven.test.failure.ignore=true clean package"
-            }
-        }    
+    stages {  
         stage('Build docker image') {
             steps {
                 script {
-                    def DOCKER_IMAGE = 'esso4real/pipeline:v5'
+                    echo 'building the image from Dockerfile.. .. .. .'
+                    echo "connecting to dockerhub repository, and pushing the ${IMAGE_NAME} image .. .. ." 
+
                     withCredentials([usernamePassword(credentialsId: 'dockerhub-id', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
     
-                    sh "docker build -t ${DOCKER_IMAGE} ." 
+                    sh "docker build -t ${IMAGE_NAME} ." 
                     sh "echo $PASS | docker login -u $USER --password-stdin"
-                    sh "docker push ${DOCKER_IMAGE}"
+                    sh "docker push ${IMAGE_NAME}"
                     }
                 }
             }
@@ -35,10 +26,11 @@ pipeline {
                 AWS_SECRET_KEY_ID = "MLpyM0YDS8LRIkir9Ug49VwKQJxj3jV59A81+mY3"
             }
             steps{
+                echo 'provisining ec2 instances .. ..  ...'
                 script{
                     dir('terraform') {
                     sh "terraform init"
-                    sh "terraform destroy --auto-approve"
+                    sh "terraform apply --auto-approve"
                     
                     EC2_LINUX_IP = sh(
                         script: "terraform output ec2_public_ip",
@@ -52,24 +44,21 @@ pipeline {
         stage ('Deploy') {
         steps {
             script {
-            sleep(time:90, unit: "SECONDS") 
-           
-            //def REMOTE_USER = 'ec2-user' 
-            //def REMOTE_HOST = '54.204.49.238'
-            def ec2instance = "ec2-user@${EC2_LINUX_IP}"
-            sshagent(['ec2-server-key']) {
-                sh "scp -o StrictHostKeyChecking=no deploy.sh ${ec2instance}:/home/ec2-user"
-                sh "ssh -o StrictHostKeyChecking=no ${ec2instance} 'chmod +x deploy.sh'"
-                sh "ssh -o StrictHostKeyChecking=no ${ec2instance} ./deploy.sh"
-                         }
-                    }   
+            echo 'waiting for ec2 intances to complete initialiazation process.... ..' 
 
-            //sh "ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST}"
-            //sh "scp -o StrictHostKeyChecking=nodeploy.sh ${REMOTE_USER}@${REMOTE_HOST}:~/"
-            //sh "ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} 'chmod +x deploy.sh'"
-            //sh "ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} ./deploy.sh"
-             
-            }
-        }             
+            sleep(time:90, unit: "SECONDS") 
+
+            echo 'deploying docker image to EC2. .. . ..'
+
+            def dockerCmd = "docker run -d -p 8080 ${IMAGE_NAME}"
+            def ec2instance = "ec2-user@${EC2_LINUX_IP}"
+
+            sshagent(['ec2-server-key']) {
+                sh "ssh -o StrictHostKeyChecking=no ${ec2instance} ${dockerCmd}"
+
+                        }
+                    }   
+                }
+            }             
+        }
     }
-}
