@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = 'esso4real/python-app:v2'
+        IMAGE_NAME = 'esso4real/python-app:v1'
     }
     stages {  
         stage('Build docker image') {
@@ -30,8 +30,8 @@ pipeline {
                 script{
                     dir('terraform') {
                     sh "terraform init"
-                    //sh "terraform apply --auto-approve"
-                   sh "terraform destroy --auto-approve"
+                    sh "terraform apply --auto-approve"
+                    //sh "terraform destroy --auto-approve"
                     
                     EC2_LINUX_IP = sh(
                         script: "terraform output ec2_public_ip",
@@ -42,6 +42,7 @@ pipeline {
             }
         }
     }   
+    
         stage ('Deploy') {
         steps {
             script {
