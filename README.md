@@ -67,14 +67,13 @@ Add access and secret key to jenkins container
 #aws configure
 
 =========================================================================================
-IN JENKINS.
+IN JENKINS GUI.
 
-Install the SSH-AGENT plugin 
-Add EC2 instance and  DockerHub login credentials
+Install the SSH-AGENT plugin / Credential-binding
+Add EC2 instance (SSH with username + private key), copy contents of .pem file to Jenkins.
+and  DockerHub login credentials
 
 To add credentials, go to;
 Jenkins sever - GUI; under Manage Jenkins select Manage Credentials, Add new credentials.
 DockerHub: Select username and password
-EC2 Instance: Select use username with private key.
-
-
+EC2 Instance: Select use SSH username with private key.
