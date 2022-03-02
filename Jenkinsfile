@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = 'esso4real/python-app:v1'
+        IMAGE_NAME = 'esso4real/python-app:v2'
     }
     stages {  
         stage('Build docker image') {
@@ -47,7 +47,7 @@ pipeline {
             script {
             echo 'waiting for ec2 intances to complete initialiazation process.... ..' 
 
-            sleep(time:90, unit: "SECONDS") 
+            //sleep(time:90, unit: "SECONDS") 
 
             echo 'deploying docker image to EC2. .. . ..'
 
