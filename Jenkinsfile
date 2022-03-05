@@ -30,8 +30,8 @@ pipeline {
                 script{
                     dir('terraform') {
                     sh "terraform init"
-                    sh "terraform apply --auto-approve"
-                    //sh "terraform destroy --auto-approve"
+                    //sh "terraform apply --auto-approve"
+                    sh "terraform destroy --auto-approve"
                     
                     EC2_LINUX_IP = sh(
                         script: "terraform output ec2_public_ip",
@@ -48,7 +48,7 @@ pipeline {
             script {
             echo 'waiting for ec2 intances to complete initialiazation process.... ..' 
 
-            sleep(time:180, unit: "SECONDS") 
+            //sleep(time:180, unit: "SECONDS") 
 
             echo 'deploying docker image to EC2. .. . ..'
 
