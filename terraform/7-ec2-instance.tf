@@ -6,13 +6,11 @@ data "aws_ami" "my-lastest-ami" {
     name   = "name"
     values = ["amzn2-ami-hvm-*-x86_64-gp2"]
   }
-
   filter {
     name   = "virtualization-type"
     values = ["hvm"]
   }
 }
-
 resource "aws_instance" "linux_server" {
   ami                         = data.aws_ami.my-lastest-ami.id
   instance_type               = "t2.micro"
@@ -26,8 +24,6 @@ resource "aws_instance" "linux_server" {
     Name = "Linux-server"
   }
 }
-
-
 output "ec2_public_ip" {
   value = aws_instance.linux_server.public_ip
 }

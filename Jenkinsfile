@@ -22,16 +22,16 @@ pipeline {
         }
         stage('Provisioning server') {
             environment {
-                AWS_ACCESS_KEY_ID = "AKIAQN3LPLSTCCK6Y5M5"
-                AWS_SECRET_KEY_ID = "MLpyM0YDS8LRIkir9Ug49VwKQJxj3jV59A81+mY3"
+                AWS_ACCESS_KEY_ID = ""
+                AWS_SECRET_KEY_ID = ""
             }
             steps{
                 echo 'provisining ec2 instances .. ..  ...'
                 script{
                     dir('terraform') {
                     sh "terraform init"
-                    //sh "terraform apply --auto-approve"
-                    sh "terraform destroy --auto-approve"
+                    sh "terraform apply --auto-approve"
+                    //sh "terraform destroy --auto-approve"
                     
                     EC2_LINUX_IP = sh(
                         script: "terraform output ec2_public_ip",
@@ -48,7 +48,7 @@ pipeline {
             script {
             echo 'waiting for ec2 intances to complete initialiazation process.... ..' 
 
-            sleep(time:120, unit: "SECONDS") 
+            sleep(time:180, unit: "SECONDS") 
 
             echo 'deploying docker image to EC2. .. . ..'
 
